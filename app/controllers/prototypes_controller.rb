@@ -1,6 +1,6 @@
 class PrototypesController < ApplicationController
   before_action :authenticate_user!, only: [:new, :edit, :destroy]
-  before_action :move_to_edit,  except: [:index, :show, :new, :create, :destroy, :update]
+  #before_action :edit,  except: [:index, :show, :new, :create, :destroy, :update ]
 
   def index
     @prototypes = Prototype.all
@@ -28,6 +28,10 @@ class PrototypesController < ApplicationController
 
   def edit
     @prototype = Prototype.find(params[:id])
+    unless current_user.id == @prototype.user_id
+      redirect_to action: :index
+    end
+
   end
 
   def update
@@ -55,13 +59,6 @@ class PrototypesController < ApplicationController
     params.require(:prototype).permit(:concept, :title, :catch_copy, :image).merge(user_id: current_user.id)
     #imageという名前で送られてきた画像の保存を許可する
 
-  end
-
-  def move_to_edit
-    prototype = Prototype.new
-    unless current_user.id == prototype.user_id 
-      redirect_to action: :index
-    end
   end
 
 end
